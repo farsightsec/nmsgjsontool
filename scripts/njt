@@ -1,0 +1,196 @@
+#!/usr/bin/env python
+
+# Copyright (c) 2015 by Farsight Security, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# njt
+# Serialize JSON as base:encode(JSON) NMSG PDUs or deserialize base:encode(JSON)
+# NMSG PDUs to JSON
+
+import os
+import sys
+import time
+import json
+import argparse
+import atexit
+
+import nmsg
+
+__revision__ = "0.1.0"
+
+
+def myhex(x):
+    """Return hex version of x.
+
+    Arguments:
+    x (int): number to convert
+
+    Returns:
+    hexadecimal version of x
+    """
+    return int(x, 16)
+
+def cleanup(file):
+    """Remove zero-length files.
+
+    Arguments:
+    file (file object): file to remove if zero-length
+    """
+    if sys.stdout.isatty():
+        if os.stat(file).st_size == 0:
+            os.remove(file)
+
+def decode(do_count, nmsg_in, prettyprint):
+    """Decode base:encode(JSON) NMSG to JSON.
+
+    Arguments:
+    do_count (int): number of payloads to process
+    nmsg_in (NMSG file object): file object containing NMSGs
+    prettyprint (bool): True to sort and pretty print the decoded JSON
+    """
+    count = do_count or 0
+    while True:
+        if do_count:
+            if count == 0:
+                break
+        try:
+            msg = nmsg_in.read()
+        except Exception as e:
+            print >> sys.stderr, "{}".format(e)
+            exit(1)
+
+        if msg and msg["type"] == "JSON":
+            if prettyprint:
+                try:
+                    print "{}".format(json.dumps(json.loads(msg['payload']),
+                        sort_keys=prettyprint, indent=4,
+                        separators=(',', ': ')))
+                except Exception as e:
+                    print >> sys.stderr, \
+                            "couldn't decode JSON record: {}".format(e)
+            else:
+                try:
+                    print "{}".format(json.dumps(json.loads(msg['payload'])))
+                except Exception as e:
+                    print >> sys.stderr, \
+                            "couldn't decode JSON record: {}".format(e)
+            count -= 1
+        else:
+            break
+
+def encode(in_file, msg, nmsg_out, out_file, verbose):
+    """Encode JSON to base:encode NMSG.
+
+    Arguments:
+    in_file (file object): stream containing input (file or stdin)
+    msg (NMSG base:encode(JSON) msg): NMSG message
+    nmsg_out (NMSG output object): NMSG output
+    out_file: (file object): will contain output contents 
+    verbose (bool): True to print debug information
+    """
+    bytes = 0
+    payloads = 0
+    while True:
+        t = time.time()
+        msg.time_sec = int(t)
+        msg.time_nsec = int((t - int(t)) * 1E9)
+        try:
+            # buf = args.input.read(args.payloadsize)
+            buf = in_file.readline()
+            #buf = readfunc(args.payloadsize)
+        except IOError as e:
+            print >> sys.stderr, "input file read error: {}: {}".format(
+                    in_file, e)
+            exit(1)
+        except KeyboardInterrupt:
+            print >> sys.stderr, "user quit"
+            exit(1)
+        if not buf:
+            break
+        msg['payload'] = buf
+        try:
+            nmsg_out.write(msg)
+            if verbose:
+                print >> sys.stderr, "wrote {} byte payload".format(len(buf))
+                bytes += len(buf)
+                payloads += 1
+        except Exception as e:
+            print >> sys.stderr, "NMSG write error: {}".format(e)
+            exit(1)
+    if verbose:
+        print >> sys.stderr, \
+                "Finished, wrote {} bytes in {} payloads to {}".format(
+                bytes, payloads, out_file)
+
+def main():
+    parser = argparse.ArgumentParser(
+            description="Serialize JSON as base:encode(JSON) NMSG PDUs"
+            " or deserialize base:encode(JSON) NMSG PDUs to JSON")
+    parser.add_argument("in_file", nargs="?",
+                        type=argparse.FileType('r'), default='-',
+                        help="input file, also accepts input from pipeline")
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument("-e", "--encode", action = "store_true",
+                        help = "encode JSON --> NMSG")
+    group.add_argument("-d", "--decode", action = "store_true",
+                        help = "decode NMSG --> JSON")
+    parser.add_argument("-c", "--count", type=int,
+                        help="stop after count payloads")
+    parser.add_argument("-w", "--out_file",
+                        default="njt.out." + str(time.time()) +
+                        ".nmsg", help="write NMSG data to file")
+    parser.add_argument("-p", "--prettyprint", action="store_true",
+                        help="sort and pretty print JSON output",
+                        default=False)
+    parser.add_argument("-z", "--zlibout", action="store_true",
+                        help="compress NMSG output", default=False)
+    parser.add_argument("--setsource", type=myhex, default=0,
+                        help="set payload source")
+    parser.add_argument("-V", "--verbose", default=False,
+                        help="print debugging information",
+                        action="store_true")
+    parser.add_argument("-v", "--version", action="version",
+                        version="%(prog)s {}".format(__revision__))
+    parser.add_argument("--setoperator", type=str,
+                        help="set payload operator")
+    parser.add_argument("--setgroup", type=str, help="set payload group")
+    args = parser.parse_args()
+
+    if args.encode:
+        if not sys.stdout.isatty():
+            args.out_file = sys.stdout
+        nmsg_out = nmsg.output.open_file(args.out_file)
+        nmsg_out.set_zlibout(args.zlibout)
+        msg = nmsg.msgtype.base.encode()
+        msg['type'] = "JSON"
+        atexit.register(cleanup, args.out_file)
+        if args.setsource:
+            msg.has_source = True
+            msg.source = args.setsource
+        if args.setgroup:
+            msg.has_group = True
+            msg.group = args.setgroup
+        if args.setoperator:
+            msg.has_operator = True
+            msg.operator = args.setoperator
+        encode(args.in_file, msg, nmsg_out, args.out_file, args.verbose)
+    else:
+        if not sys.stdin.isatty():
+            args.in_file = sys.stdin
+        nmsg_in = nmsg.input.open_file(args.in_file)
+        nmsg_in.set_filter_msgtype('base', 'encode')
+        decode(args.count, nmsg_in, args.prettyprint)
+
+if __name__ == "__main__":
+    main()

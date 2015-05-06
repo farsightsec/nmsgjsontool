@@ -1,0 +1,16 @@
+{"count": 2, "time_first": 1372708329, "rrtype": "MX", "rrname": "example.com.", "bailiwick": "example.com.", "rdata": ["10 foo.example.ru."], "time_last": 1372708329}
+{"count": 19, "rrtype": "NS", "rrname": "example.com.", "zone_time_first": 1372609301, "zone_time_last": 1374164567, "bailiwick": "com.", "rdata": ["ns.foo.example.com.", "ns1.example.net.", "ns2.example.com.", "ns3.example.info."]}
+{"count": 157, "rrtype": "NS", "rrname": "example.com.", "zone_time_first": 1359047885, "zone_time_last": 1372522741, "bailiwick": "com.", "rdata": ["ns.bar.example.com.", "ns.bar.example.com."]}
+{"count": 537, "rrtype": "NS", "rrname": "example.com.", "zone_time_first": 1374250920, "zone_time_last": 1421169813, "bailiwick": "com.", "rdata": ["ns5.dnsmadeeasy.com.", "ns6.dnsmadeeasy.com.", "ns7.dnsmadeeasy.com."]}
+{"count": 5617, "time_first": 1380123423, "rrtype": "A", "rrname": "example.com.", "bailiwick": "example.com.", "rdata": ["192.168.0.81"], "time_last": 1423679285}
+{"count": 628, "time_first": 1374098930, "rrtype": "A", "rrname": "example.com.", "bailiwick": "example.com.", "rdata": ["192.168.0.80"], "time_last": 1380124067}
+{"count": 58, "time_first": 1372688083, "rrtype": "NS", "rrname": "example.com.", "bailiwick": "com.", "rdata": ["ns.baz.example.com.", "ns1.example.net.", "ns2.example.com.", "ns3.example.info."], "time_last": 1374165919}
+{"count": 17, "time_first": 1360364071, "rrtype": "NS", "rrname": "example.com.", "bailiwick": "com.", "rdata": ["ns.baz.example.com.", "ns.baz.example.com."], "time_last": 1372437672}
+{"count": 35196, "time_first": 1374172950, "rrtype": "NS", "rrname": "example.com.", "bailiwick": "com.", "rdata": ["ns5.dnsmadeeasy.com.", "ns6.dnsmadeeasy.com.", "ns7.dnsmadeeasy.com."], "time_last": 1423692751}
+{"count": 51, "time_first": 1372688083, "rrtype": "NS", "rrname": "example.com.", "bailiwick": "example.com.", "rdata": ["ns.baz.example.com.", "ns1.example.net.", "ns2.example.com.", "ns3.example.info."], "time_last": 1374023864}
+{"count": 55567, "time_first": 1374096380, "rrtype": "NS", "rrname": "example.com.", "bailiwick": "example.com.", "rdata": ["ns5.dnsmadeeasy.com.", "ns6.dnsmadeeasy.com.", "ns7.dnsmadeeasy.com."], "time_last": 1423689646}
+{"count": 11, "time_first": 1412896272, "rrtype": "SOA", "rrname": "example.com.", "bailiwick": "example.com.", "rdata": ["example.io. hostmaster.example.io. 2014081222 7200 3600 604800 3600"], "time_last": 1412907165}
+{"count": 101, "time_first": 1412924486, "rrtype": "SOA", "rrname": "example.com.", "bailiwick": "example.com.", "rdata": ["example.io. hostmaster.example.io. 2014081223 7200 3600 604800 3600"], "time_last": 1413225434}
+{"count": 163, "time_first": 1413225918, "rrtype": "SOA", "rrname": "example.com.", "bailiwick": "example.com.", "rdata": ["example.io. hostmaster.example.io. 2014101301 7200 3600 604800 3600"], "time_last": 1413564134}
+{"count": 90, "time_first": 1413591993, "rrtype": "SOA", "rrname": "example.com.", "bailiwick": "example.com.", "rdata": ["example.io. hostmaster.example.io. 2014101303 7200 3600 604800 3600"], "time_last": 1413823967}
+{"count": 216, "time_first": 1413827312, "rrtype": "SOA", "rrname": "example.com.", "bailiwick": "example.com.", "rdata": ["example.io. hostmaster.example.io. 2014102002 7200 3600 604800 3600"], "time_last": 1414499583}
