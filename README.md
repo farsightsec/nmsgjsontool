@@ -1,4 +1,7 @@
 # Nmsgjsontool
+
+**This tool is now obsolete.  nmsgtool has been enhanced to directly support reading and writing JSON.  See nmsgtool's `--readjson` and `--writejson` options.**
+
 This is the NMSG JSON tool (`njt`). It is a Python-based convenience tool used
 to do the following:
 
